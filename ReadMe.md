@@ -147,5 +147,5 @@ oc start-build kafka2cloudevent-s2i --from-dir=deploy --follow
 ```
 docker login
 docker build -t kafka2cloudevent -f DockerfileCommunity .
-docker tag kafka2cloudevent:latest YOUR_REPO/kafka2cloudevent:latest
+docker tag kafka2cloudevent:latest alainpham/kafka2cloudevent:latest
 ```

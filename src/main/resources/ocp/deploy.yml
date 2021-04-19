@@ -153,6 +153,8 @@ stringData:
 
     theme=main-dark-green
 
+    camel.component.kafka.configuration.brokers=amqstreams:9092
+    camel.component.kafka.configuration.group-id=secure-group
 ---
 kind: Secret
 apiVersion: v1
