@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://camel.apache.org/schema/spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://camel.apache.org/schema/spring https://camel.apache.org/schema/spring/camel-spring.xsd">
+    
+    <route id="http-receiver">
+        <from id="http-receiver-starter" uri="servlet://ping" />
+        <to uri="bean:eventLogger?method=logStartAndBody" />
+        <setHeader id="set-header-http-receiver" headerName="Content-Type">
+            <constant>application/json</constant>
+        </setHeader>
+        <setBody  id="set-body-http-receiver">
+            <constant>{"msg" : "HELLO"}</constant>
+        </setBody>
+        <to uri="bean:eventLogger?method=logElapsedTimeAndBody" />
+    </route>
+
+    <route id="send-msg">
+        <from id="send-socket-msg-to-all-starter" uri="servlet:/send-msg"/>
+        <convertBodyTo type="java.lang.String"/>
+
+        <setBody>
+            <constant>
+                <![CDATA[ 
+                {
+                    "Records": [
+                       {
+                          "eventVersion": "2.2",
+                          "eventSource": "ceph:s3",
+                          "awsRegion": "",
+                          "eventTime": "2021-04-18 21:31:31.244095Z",
+                          "eventName": "s3:ObjectCreated:Put",
+                          "userIdentity": {
+                             "principalId": "xraylab"
+                          },
+                          "requestParameters": {
+                             "sourceIPAddress": ""
+                          },
+                          "responseElements": {
+                             "x-amz-request-id": "f15d9282-bc7d-4b1c-a525-fe4870418c48.14185.1443",
+                             "x-amz-id-2": "3769-s3a-s3a"
+                          },
+                          "s3": {
+                             "s3SchemaVersion": "1.0",
+                             "configurationId": "xray-images",
+                             "bucket": {
+                                "name": "xraylab-0001",
+                                "ownerIdentity": {
+                                   "principalId": "xraylab"
+                                },
+                                "arn": "arn:aws:s3:::xraylab-0001",
+                                "id": "f15d9282-bc7d-4b1c-a525-fe4870418c48.14191.90"
+                             },
+                             "object": {
+                                "key": "demo_Cathleen Moore_8012_1947-02-05_2016-12-18.jpeg",
+                                "size": 79577,
+                                "etag": "f689330a858d1eafd26908352f9b7f66",
+                                "versionId": "",
+                                "sequencer": "33A57C60003CFD0E",
+                                "metadata": [
+                                   {
+                                      "key": "x-amz-content-sha256",
+                                      "val": "a53cfe16afed68990637335ee7ccbc118553e0eaf493e743e0987bc58ea1dd44"
+                                   },
+                                   {
+                                      "key": "x-amz-date",
+                                      "val": "20210418T213131Z"
+                                   }
+                                ],
+                                "tags": []
+                             }
+                          },
+                          "eventId": "1618781491.251476.f689330a858d1eafd26908352f9b7f66",
+                          "opaqueData": ""
+                       }
+                    ]
+                 }
+                 ]]>
+            </constant>
+        </setBody>
+
+        <to uri="kafka:test"/>
+    </route>
+
+    <route>
+        <from uri="kafka:test"/>
+        
+        <unmarshal>
+            <json library="Jackson"/>
+        </unmarshal>
+        
+        <log message="${body}"/>
+        
+        <to uri="velocity:template/transform.json"/>
+        
+        <removeHeaders pattern="*"/>
+        
+        <setHeader headerName="content-type">
+            <constant>application/cloudevents+json; charset=UTF-8</constant>
+        </setHeader>
+        
+        <log message="${body}"/>
+        
+
+        <unmarshal>
+            <json library="Jackson"/>
+        </unmarshal>
+        
+        
+        <to uri="kafka:output"/>
+
+
+        <bean ref="viewUpdate" method="appendData(${body}, cloudevent, log-table)"/>
+    </route>
+</routes>

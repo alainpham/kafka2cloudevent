@@ -1,0 +1,16 @@
+{
+    "data": {
+       "url": "https://rgw-openshift-storage.apps.cluster-2ab3.2ab3.sandbox777.opentlc.com/${body['Records'][0]['s3']['bucket']['name']}/${body['Records'][0]['s3']['object']['key']}",
+       "bucktName": "${body['Records'][0]['s3']['bucket']['name']}",
+       "eventName": "${body['Records'][0]['eventName']}",
+       "imageName": "${body['Records'][0]['s3']['object']['key']}",
+       "key": "${body['Records'][0]['s3']['object']['key']}",
+       "name": "${body['Records'][0]['s3']['object']['key']}",
+       "secondOpinion": false
+    },
+    "specversion": "1.0",
+    "type": "xrayevent",
+    "source":  "${body['Records'][0]['eventSource']}",
+    "id": "${body['Records'][0]['s3']['bucket']['id']}",
+    "datacontenttype": "application/json"
+ }
