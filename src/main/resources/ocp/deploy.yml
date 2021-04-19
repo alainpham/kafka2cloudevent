@@ -155,6 +155,9 @@ stringData:
 
     camel.component.kafka.configuration.brokers=amqstreams:9092
     camel.component.kafka.configuration.group-id=secure-group
+
+    input.topic=xray-images-anonymized
+    output.topic=kogito-xray-images-anonymized
 ---
 kind: Secret
 apiVersion: v1

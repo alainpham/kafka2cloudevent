@@ -77,11 +77,11 @@
             </constant>
         </setBody>
 
-        <to uri="kafka:test"/>
+        <to uri="kafka:{{input.topic}}"/>
     </route>
 
     <route>
-        <from uri="kafka:test"/>
+        <from uri="kafka:{{input.topic}}"/>
         
         <unmarshal>
             <json library="Jackson"/>
@@ -100,14 +100,14 @@
         <log message="${body}"/>
         
 
+
+        
+        <to uri="kafka:{{output.topic}}"/>
+
         <unmarshal>
             <json library="Jackson"/>
         </unmarshal>
         
-        
-        <to uri="kafka:output"/>
-
-
         <bean ref="viewUpdate" method="appendData(${body}, cloudevent, log-table)"/>
     </route>
 </routes>
